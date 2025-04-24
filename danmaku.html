@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Danmaku Twitch Chat</title>
+  <style>
+    body {
+      margin: 0;
+      background: transparent;
+      overflow: hidden;
+    }
+
+    .danmaku {
+      position: absolute;
+      white-space: nowrap;
+      color: white;
+      font-size: 24px;
+      text-shadow: 2px 2px 4px black;
+      animation: fly 8s linear forwards;
+    }
+
+    @keyframes fly {
+      from {
+        right: -100%;
+        top: calc(10% + 80% * var(--random-top));
+      }
+      to {
+        right: 100%;
+        top: calc(10% + 80% * var(--random-top));
+      }
+    }
+  </style>
+</head>
+<body>
+
+<script src="https://cdn.jsdelivr.net/npm/tmi.js@1.8.5/dist/tmi.min.js"></script>
+<script>
+  const client = new tmi.Client({
+    channels: ['skeden27'] // <-- замени на свой Twitch канал
+  });
+
+  client.connect();
+
+  client.on('message', (channel, tags, message, self) => {
+    if(self) return;
+
+    const danmaku = document.createElement('div');
+    danmaku.className = 'danmaku';
+    danmaku.textContent = `${tags['display-name']}: ${message}`;
+    danmaku.style.setProperty('--random-top', Math.random());
+
+    document.body.appendChild(danmaku);
+    setTimeout(() => danmaku.remove(), 8000);
+  });
+</script>
+
+</body>
+</html>
